@@ -8,12 +8,34 @@ import reactor.test.StepVerifier;
 @Slf4j
 public class MonoTest {
 
+    private static final String SUPER_HERO_NAME = "Iron man";
+
     @Test
     public void monoSubscriberTest() {
-        String superHero = "Iron man";
-        Mono<String> publisher = Mono.just(superHero).log();
+        Mono<String> publisher = Mono.just(SUPER_HERO_NAME).log();
 
-        StepVerifier.create(publisher).expectNext(superHero).verifyComplete();
+        StepVerifier.create(publisher).expectNext(SUPER_HERO_NAME).verifyComplete();
+    }
+
+    @Test
+    public void monoSubscriberOverrideConsumerTest() {
+        Mono<String> monoPublisher = Mono.just(SUPER_HERO_NAME);
+
+        monoPublisher.subscribe(s -> log.info("The super is: {}", s));
+
+        StepVerifier.create(monoPublisher).expectNext(SUPER_HERO_NAME).verifyComplete();
+    }
+
+    @Test
+    public void monoSubscriberConsumerErrorTest() {
+        Mono<String> monoPublisher = Mono.just(SUPER_HERO_NAME).map(s -> { throw new RuntimeException("testing error"); });
+
+        monoPublisher.subscribe(
+                hero -> log.info("The superHero is: {}", hero),
+                error -> log.error(error.getMessage())
+        );
+
+        StepVerifier.create(monoPublisher).expectError(RuntimeException.class).verify();
     }
 
 }
