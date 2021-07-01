@@ -73,7 +73,7 @@ public class FluxTest {
 
     @Test
     public void fluxSubscriberTestingIntervalWithVirtualTimeTest() {
-        StepVerifier.withVirtualTime(this::createInterval)
+        StepVerifier.withVirtualTime(() -> Flux.interval(Duration.ofDays(1)).log())
                 .expectSubscription()
                 .expectNoEvent(Duration.ofHours(24))
                 .thenAwait(Duration.ofDays(2))
@@ -81,10 +81,6 @@ public class FluxTest {
                 .expectNext(1L)
                 .thenCancel()
                 .verify();
-    }
-
-    private Flux<Long> createInterval() {
-        return Flux.interval(Duration.ofDays(1)).log();
     }
 
 }
