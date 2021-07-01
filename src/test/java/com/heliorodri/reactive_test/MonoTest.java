@@ -62,8 +62,22 @@ public class MonoTest {
                 () -> log.info("FINISHED"),
                 Subscription::cancel
         );
+    }
 
-        StepVerifier.create(monoPublisher).expectNext(SUPER_HERO_NAME.toUpperCase()).verifyComplete();
+    @Test
+    public void monoDoOnMethodsTest() {
+        Mono<String> monoPublisher = Mono.just(SUPER_HERO_NAME)
+                .map(String::toUpperCase)
+                .doOnSubscribe(subscription -> log.info("Subscribed"))
+                .doOnRequest(l -> log.info("request received"))
+                .doOnNext(s -> log.info("doOnNext-execution. Value {}", s))
+                .doOnSuccess(s -> log.info("success: ALL DONE!"));
+
+        monoPublisher.subscribe(
+                s -> log.info("The super is: {}", s),
+                Throwable::printStackTrace,
+                () -> log.info("FINISHED")
+        );
     }
 
 }
