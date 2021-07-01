@@ -67,11 +67,7 @@ public class FluxTest {
                 .doOnError(Throwable::printStackTrace)
                 .take(limitRequest);
 
-        StepVerifier.create(flux)
-                .expectNext(1)
-                .expectNext(2)
-                .expectNext(3)
-                .verifyComplete();
+        StepVerifier.create(flux).expectNext(1,2,3).verifyComplete();
     }
 
 }
