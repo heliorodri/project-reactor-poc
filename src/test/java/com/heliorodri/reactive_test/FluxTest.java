@@ -73,6 +73,7 @@ public class FluxTest {
 
     @Test
     public void fluxSubscriberTestingIntervalWithVirtualTimeTest() {
+        //Interval runs in a parallel thread
         StepVerifier.withVirtualTime(() -> Flux.interval(Duration.ofDays(1)).log())
                 .expectSubscription()
                 .expectNoEvent(Duration.ofHours(24))
