@@ -2,6 +2,7 @@ package com.heliorodri.reactive_test;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.reactivestreams.Subscription;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -36,6 +37,33 @@ public class MonoTest {
         );
 
         StepVerifier.create(monoPublisher).expectError(RuntimeException.class).verify();
+    }
+
+    @Test
+    public void monoSubscriberConsumerCompleteAndLogTest() {
+        Mono<String> monoPublisher = Mono.just(SUPER_HERO_NAME).map(String::toUpperCase);
+
+        monoPublisher.subscribe(
+                s -> log.info("The super is: {}", s),
+                Throwable::printStackTrace,
+                () -> log.info("FINISHED")
+        );
+
+        StepVerifier.create(monoPublisher).expectNext(SUPER_HERO_NAME.toUpperCase()).verifyComplete();
+    }
+
+    @Test
+    public void monoSubscriberConsumerSubscriptionCancelTest() {
+        Mono<String> monoPublisher = Mono.just(SUPER_HERO_NAME).map(String::toUpperCase);
+
+        monoPublisher.subscribe(
+                s -> log.info("The super is: {}", s),
+                Throwable::printStackTrace,
+                () -> log.info("FINISHED"),
+                Subscription::cancel
+        );
+
+        StepVerifier.create(monoPublisher).expectNext(SUPER_HERO_NAME.toUpperCase()).verifyComplete();
     }
 
 }
