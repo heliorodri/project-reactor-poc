@@ -1,5 +1,6 @@
 package com.heliorodri.reactive_test;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
@@ -7,6 +8,7 @@ import reactor.test.StepVerifier;
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 public class FluxTest {
 
     private static final String ARGENTINA = "Argentina";
@@ -34,6 +36,25 @@ public class FluxTest {
         Flux<String> countries = Flux.fromIterable(COUNTRIES);
 
         StepVerifier.create(countries).expectNext(ARGENTINA, BRAZIL, CANADA).verifyComplete();
+    }
+
+    @Test
+    public void fluxSubscriberCountriesError(){
+        Flux<String> countries = Flux.fromIterable(COUNTRIES)
+                .map(country -> {
+                    if (!country.equals(ARGENTINA)) {
+                        throw new IllegalArgumentException("Messi can only play for " + ARGENTINA);
+                    }
+                    return country;
+                })
+                .doOnSubscribe(s -> log.info("Country: {}", s))
+                .doOnError(Throwable::printStackTrace);
+
+
+        StepVerifier.create(countries)
+                .expectNext(ARGENTINA)
+                .expectError(IllegalArgumentException.class)
+                .verify();
     }
 
 }
