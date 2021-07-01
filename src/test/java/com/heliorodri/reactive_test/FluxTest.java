@@ -57,4 +57,21 @@ public class FluxTest {
                 .verify();
     }
 
+    @Test
+    public void fluxSubscriberBackPressureTest(){
+        long limitRequest = 3L;
+
+        Flux<Integer> flux = Flux.range(1,5)
+                .log()
+                .doOnSubscribe(s -> log.info("Value: {}", s))
+                .doOnError(Throwable::printStackTrace)
+                .take(limitRequest);
+
+        StepVerifier.create(flux)
+                .expectNext(1)
+                .expectNext(2)
+                .expectNext(3)
+                .verifyComplete();
+    }
+
 }
