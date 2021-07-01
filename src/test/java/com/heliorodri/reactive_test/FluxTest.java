@@ -2,6 +2,7 @@ package com.heliorodri.reactive_test;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.ConnectableFlux;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -97,6 +98,20 @@ public class FluxTest {
                 .expectNext(1L)
                 .thenCancel()
                 .verify();
+    }
+
+    @Test
+    public void connectableFluxTest() {
+        ConnectableFlux<Integer> connectableFlux = Flux.range(1,10)
+                .delayElements(Duration.ofMillis(100))
+                .publish();
+
+        StepVerifier.create(connectableFlux)
+                .then(connectableFlux::connect)
+                .expectNext(1,2,3,4,5,6,7,8,9,10)
+                .expectComplete()
+                .verify();
+
     }
 
 }
