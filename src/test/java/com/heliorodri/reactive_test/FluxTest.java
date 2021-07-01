@@ -18,28 +18,28 @@ public class FluxTest {
     private static final List<String> COUNTRIES = Arrays.asList(ARGENTINA, BRAZIL, CANADA);
 
     @Test
-    public void fluxSubscriber(){
+    public void fluxSubscriberTest(){
         Flux<String> fluxCountries = Flux.just(ARGENTINA, BRAZIL, CANADA).log();
 
         StepVerifier.create(fluxCountries).expectNext(ARGENTINA, BRAZIL, CANADA).verifyComplete();
     }
 
     @Test
-    public void fluxSubscriberNumbers(){
+    public void fluxSubscriberNumbersTest(){
         Flux<Integer> fluxStarsRate = Flux.range(1,5);
 
         StepVerifier.create(fluxStarsRate).expectNext(1,2,3,4,5).verifyComplete();
     }
 
     @Test
-    public void fluxSubscriberFromList(){
+    public void fluxSubscriberFromListTest(){
         Flux<String> countries = Flux.fromIterable(COUNTRIES);
 
         StepVerifier.create(countries).expectNext(ARGENTINA, BRAZIL, CANADA).verifyComplete();
     }
 
     @Test
-    public void fluxSubscriberCountriesError(){
+    public void fluxSubscriberCountriesErrorTest(){
         Flux<String> countries = Flux.fromIterable(COUNTRIES)
                 .map(country -> {
                     if (!country.equals(ARGENTINA)) {
