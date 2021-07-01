@@ -72,6 +72,21 @@ public class FluxTest {
     }
 
     @Test
+    public void fluxSubscriberBackPressureWithLimitRateTest(){
+        Flux<Integer> flux = Flux.range(1,10)
+                .log()
+                .limitRate(2);
+
+        StepVerifier.create(flux)
+                .expectNext(1,2)
+                .expectNext(3,4)
+                .expectNext(5,6)
+                .expectNext(7,8)
+                .expectNext(9,10)
+                .verifyComplete();
+    }
+
+    @Test
     public void fluxSubscriberTestingIntervalWithVirtualTimeTest() {
         //Interval runs in a parallel thread
         StepVerifier.withVirtualTime(() -> Flux.interval(Duration.ofDays(1)).log())
