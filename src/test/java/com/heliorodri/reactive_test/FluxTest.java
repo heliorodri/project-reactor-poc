@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 
@@ -68,6 +69,22 @@ public class FluxTest {
                 .take(limitRequest);
 
         StepVerifier.create(flux).expectNext(1,2,3).verifyComplete();
+    }
+
+    @Test
+    public void fluxSubscriberTestingIntervalWithVirtualTimeTest() {
+        StepVerifier.withVirtualTime(this::createInterval)
+                .expectSubscription()
+                .expectNoEvent(Duration.ofHours(24))
+                .thenAwait(Duration.ofDays(2))
+                .expectNext(0L)
+                .expectNext(1L)
+                .thenCancel()
+                .verify();
+    }
+
+    private Flux<Long> createInterval() {
+        return Flux.interval(Duration.ofDays(1)).log();
     }
 
 }
