@@ -80,4 +80,22 @@ public class MonoTest {
         );
     }
 
+    @Test
+    public void monoDoOnErrorMethodsTest() {
+        String noSuperHero = "";
+
+        Mono<Object> error = Mono.error(new RuntimeException("Testing doOnError method"))
+                .doOnSubscribe(subscription -> log.info("Subscribed"))
+                .doOnRequest(request -> log.info("request received"))
+                .doOnNext(value -> log.info("doOnNext-execution. Value {}", value))
+                .doOnSuccess(success -> log.info("success: ALL DONE!"))
+                .doOnError(e -> log.error(e.getMessage()))
+                .onErrorResume(resume -> {
+                    log.info("error resume. Returning empty String ");
+                    return Mono.just(noSuperHero);
+                });
+
+        StepVerifier.create(error).expectNext(noSuperHero).verifyComplete();
+    }
+
 }
