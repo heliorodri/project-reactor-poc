@@ -17,4 +17,11 @@ public class FluxTest {
         StepVerifier.create(fluxCountries).expectNext(ARGENTINA, BRAZIL, CANADA).verifyComplete();
     }
 
+    @Test
+    public void fluxSubscriberNumbers(){
+        Flux<Integer> fluxStarsRate = Flux.range(1,5);
+
+        StepVerifier.create(fluxStarsRate).expectNext(1,2,3,4,5).verifyComplete();
+    }
+
 }
