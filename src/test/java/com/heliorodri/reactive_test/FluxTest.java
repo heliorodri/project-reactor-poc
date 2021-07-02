@@ -114,4 +114,20 @@ public class FluxTest {
 
     }
 
+    @Test
+    public void connectableFluxAutoConnectTest() {
+        Flux<Integer> fluxAutoCon = Flux.range(1,5)
+                .delayElements(Duration.ofMillis(100))
+                .publish()
+                .autoConnect(3);
+
+        StepVerifier.create(fluxAutoCon)
+                .then(fluxAutoCon::subscribe)
+                .then(fluxAutoCon::subscribe)
+                .expectNext(1,2,3,4,5)
+                .expectComplete()
+                .verify();
+
+    }
+
 }
