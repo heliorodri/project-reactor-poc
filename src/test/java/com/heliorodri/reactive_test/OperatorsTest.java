@@ -87,4 +87,44 @@ public class OperatorsTest {
                 .verifyComplete();
     }
 
+    @Test
+    public void publishAndSubscribeOnSimpleTest(){
+        Flux<Integer> flux = Flux.range(1,5)
+                .publishOn(Schedulers.single())
+                .map(i -> {
+                    log.info("Map1 : value {} on Thread {}", i, Thread.currentThread().getName());
+                    return i;
+                })
+                .subscribeOn(Schedulers.boundedElastic())
+                .map(i -> {
+                    log.info("Map2 : value {} on Thread {}", i, Thread.currentThread().getName());
+                    return i;
+                });
+
+        StepVerifier.create(flux)
+                .expectSubscription()
+                .expectNext(1,2,3,4,5)
+                .verifyComplete();
+    }
+
+    @Test
+    public void subscribeAndPublishOnSimpleTest(){
+        Flux<Integer> flux = Flux.range(1,5)
+                .subscribeOn(Schedulers.single())
+                .map(i -> {
+                    log.info("Map1 : value {} on Thread {}", i, Thread.currentThread().getName());
+                    return i;
+                })
+                .publishOn(Schedulers.boundedElastic())
+                .map(i -> {
+                    log.info("Map2 : value {} on Thread {}", i, Thread.currentThread().getName());
+                    return i;
+                });
+
+        StepVerifier.create(flux)
+                .expectSubscription()
+                .expectNext(1,2,3,4,5)
+                .verifyComplete();
+    }
+
 }
