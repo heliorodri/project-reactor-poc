@@ -243,4 +243,17 @@ public class OperatorsTest {
                 .verifyComplete();
     }
 
+    @Test
+    public void mergeWithOperatorTest() {
+        Flux<String> firstFlux = Flux.just("a", "b").delayElements(Duration.ofMillis(200));
+        Flux<String> secondFlux = Flux.just("c", "d");
+
+        Flux<String> mergedFlux = firstFlux.mergeWith(secondFlux).log();
+
+        StepVerifier.create(mergedFlux)
+                .expectSubscription()
+                .expectNext("c","d", "a","b")
+                .verifyComplete();
+    }
+
 }
