@@ -15,6 +15,7 @@
         <junit-jupiter-api.version>5.8.0-M1</junit-jupiter-api.version>
         <lombok.version>1.18.18</lombok.version>
         <slf4j-simple.version>1.7.31</slf4j-simple.version>
+        <blockhound.version>1.0.6.RELEASE</blockhound.version>
     </properties>
 
     <dependencies>
@@ -28,6 +29,12 @@
             <groupId>io.projectreactor</groupId>
             <artifactId>reactor-test</artifactId>
             <version>${reactor-core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.projectreactor.tools</groupId>
+            <artifactId>blockhound</artifactId>
+            <version>${blockhound.version}</version>
         </dependency>
 
         <dependency>
