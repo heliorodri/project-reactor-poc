@@ -12,6 +12,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 public class OperatorsTest {
@@ -163,6 +166,23 @@ public class OperatorsTest {
                 .expectSubscription()
                 .expectNext(notEmptyString)
                 .verifyComplete();
+    }
+
+    @Test
+    public void deferOperatorTest() {
+        Mono<Long> defer = Mono.defer(() -> Mono.just(System.currentTimeMillis()));
+
+//        defer.subscribe(l  -> log.info("{}", l));
+//        Thread.sleep(100);
+//        defer.subscribe(l  -> log.info("{}", l));
+//        Thread.sleep(100);
+//        defer.subscribe(l  -> log.info("{}", l));
+//        Thread.sleep(100);
+//        defer.subscribe(l  -> log.info("{}", l));
+
+        AtomicLong atomicLong = new AtomicLong();
+        defer.subscribe(atomicLong::set);
+        assertTrue(atomicLong.get() > 0);
     }
 
 }
