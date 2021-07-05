@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -208,6 +209,22 @@ public class OperatorsTest {
         StepVerifier.create(concatFlux)
                 .expectSubscription()
                 .expectNext("a","b","c","d")
+                .verifyComplete();
+    }
+
+    @Test
+    public void combineLatestOperatorTest() {
+        Flux<String> firstFlux = Flux.just("a", "b");
+        Flux<String> secondFlux = Flux.just("c", "d");
+
+        Flux<String> combineLatestFlux = Flux.combineLatest(firstFlux, secondFlux,
+                (s1, s2) -> s1.toUpperCase() + s2.toUpperCase())
+                .log();
+
+        //there is no accuracy in this test
+        StepVerifier.create(combineLatestFlux)
+                .expectSubscription()
+                .expectNext("BC","BD")
                 .verifyComplete();
     }
 
