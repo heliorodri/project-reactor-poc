@@ -198,4 +198,17 @@ public class OperatorsTest {
                 .verifyComplete();
     }
 
+    @Test
+    public void concatWithOperatorTest() {
+        Flux<String> firstFlux = Flux.just("a", "b");
+        Flux<String> secondFlux = Flux.just("c", "d");
+
+        Flux<String> concatFlux = firstFlux.concatWith(secondFlux).log();
+
+        StepVerifier.create(concatFlux)
+                .expectSubscription()
+                .expectNext("a","b","c","d")
+                .verifyComplete();
+    }
+
 }
