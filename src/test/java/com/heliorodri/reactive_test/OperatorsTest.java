@@ -11,8 +11,8 @@ import reactor.test.StepVerifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -225,6 +225,21 @@ public class OperatorsTest {
         StepVerifier.create(combineLatestFlux)
                 .expectSubscription()
                 .expectNext("BC","BD")
+                .verifyComplete();
+    }
+
+    @Test
+    public void mergeOperatorTest() {
+        Flux<String> firstFlux = Flux.just("a", "b").delayElements(Duration.ofMillis(200));
+        Flux<String> secondFlux = Flux.just("c", "d");
+
+        Flux<String> mergedFlux = Flux.merge(firstFlux, secondFlux)
+                .delayElements(Duration.ofMillis(200))
+                .log();
+
+        StepVerifier.create(mergedFlux)
+                .expectSubscription()
+                .expectNext("c","d", "a","b")
                 .verifyComplete();
     }
 
