@@ -185,4 +185,17 @@ public class OperatorsTest {
         assertTrue(atomicLong.get() > 0);
     }
 
+    @Test
+    public void concatOperatorTest() {
+        Flux<String> firstFlux = Flux.just("a", "b");
+        Flux<String> secondFlux = Flux.just("c", "d");
+
+        Flux<String> concatFlux = Flux.concat(firstFlux, secondFlux).log();
+
+        StepVerifier.create(concatFlux)
+                .expectSubscription()
+                .expectNext("a","b","c","d")
+                .verifyComplete();
+    }
+
 }
