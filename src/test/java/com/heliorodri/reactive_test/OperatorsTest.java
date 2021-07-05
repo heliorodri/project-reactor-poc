@@ -264,6 +264,28 @@ public class OperatorsTest {
     }
 
     @Test
+    public void mergeDelayErrorOperatorTest() {
+        Flux<String> flux1 = Flux.just("a", "b")
+                .map(s -> {
+                    if (s.equals("b")){
+                        throw new IllegalArgumentException();
+                    }
+                    return s;
+                })
+                .doOnError(e -> log.info("Something bad happened: {}", e.getMessage()));
+
+        Flux<String> flux2 = Flux.just("c", "d");
+
+        Flux<String> mergedFlux = Flux.mergeDelayError(1, flux1, flux2, flux1).log();
+
+        StepVerifier.create(mergedFlux)
+                .expectSubscription()
+                .expectNext("a","c", "d","a")
+                .expectError()
+                .verify();
+    }
+
+    @Test
     public void mergeWithOperatorTest() {
         Flux<String> firstFlux = Flux.just("a", "b").delayElements(Duration.ofMillis(200));
         Flux<String> secondFlux = Flux.just("c", "d");
