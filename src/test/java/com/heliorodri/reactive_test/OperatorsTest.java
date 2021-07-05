@@ -256,4 +256,17 @@ public class OperatorsTest {
                 .verifyComplete();
     }
 
+    @Test
+    public void mergeSequentialOperatorTest() {
+        Flux<String> flux1 = Flux.just("a", "b").delayElements(Duration.ofMillis(200));
+        Flux<String> flux2 = Flux.just("c", "d");
+
+        Flux<String> mergedFlux = Flux.mergeSequential(flux1, flux2, flux1).log();
+
+        StepVerifier.create(mergedFlux)
+                .expectSubscription()
+                .expectNext("a","b", "c","d", "a","b")
+                .verifyComplete();
+    }
+
 }
