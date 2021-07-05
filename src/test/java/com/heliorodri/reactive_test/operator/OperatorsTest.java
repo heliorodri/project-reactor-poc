@@ -1,5 +1,9 @@
-package com.heliorodri.reactive_test;
+package com.heliorodri.reactive_test.operator;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -7,6 +11,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
+import reactor.util.function.Tuple2;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +20,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
@@ -344,5 +351,28 @@ public class OperatorsTest {
                 ? Flux.just("Name A", "Name A2").delayElements(Duration.ofMillis(100))
                 : Flux.just("Name B");
     }
+
+    @Test
+    public void zipOperatorTest() {
+        String forrestGump = "Forrest Gump";
+        String shrek = "Shrek";
+
+        Movie shrekMovie = Movie.builder().mainCharacter(shrek).title(shrek).build();
+        Movie forrestMovie = Movie.builder().mainCharacter(forrestGump).title(forrestGump).build();
+
+        Flux<String> titleFlux = Flux.just(shrek, forrestGump);
+        Flux<String> mainCharacterFlux = Flux.just(shrek, forrestGump);
+
+        Flux<Movie> moviesFlux = Flux.zip(titleFlux, mainCharacterFlux)
+                .flatMap(movie -> Flux.just(Movie.builder().title(movie.getT1()).mainCharacter(movie.getT2()).build()));
+
+        StepVerifier
+                .create(moviesFlux)
+                .expectSubscription()
+                .assertNext(movie -> assertEquals(movie.toString(), shrekMovie.toString()))
+                .assertNext(movie -> assertEquals(movie.toString(), forrestMovie.toString()))
+                .verifyComplete();
+    }
+
 
 }
