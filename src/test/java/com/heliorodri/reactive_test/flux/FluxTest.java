@@ -1,7 +1,9 @@
 package com.heliorodri.reactive_test.flux;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import reactor.blockhound.BlockHound;
 import reactor.core.publisher.ConnectableFlux;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
@@ -18,6 +20,11 @@ public class FluxTest {
     private static final String CANADA = "Canada";
 
     private static final List<String> COUNTRIES = Arrays.asList(ARGENTINA, BRAZIL, CANADA);
+
+    @BeforeAll
+    public static void setUp(){
+        BlockHound.install();
+    }
 
     @Test
     public void fluxSubscriberTest(){
