@@ -152,4 +152,17 @@ public class OperatorsTest {
          .verifyComplete();
     }
 
+    @Test
+    public void switchIfEmptyOperatorTest(){
+        String notEmptyString = "This is not empty anymore";
+        Flux<Object> emptyFlux = Flux.empty();
+
+        Flux<Object> flux = emptyFlux.switchIfEmpty(Flux.just(notEmptyString)).log();
+
+        StepVerifier.create(flux)
+                .expectSubscription()
+                .expectNext(notEmptyString)
+                .verifyComplete();
+    }
+
 }
