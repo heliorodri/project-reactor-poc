@@ -200,6 +200,26 @@ public class OperatorsTest {
     }
 
     @Test
+    public void concatOperatorDelayErrorTest() {
+        Flux<String> firstFlux = Flux.just("a", "b")
+                .map(s -> {
+                    if (s.equals("b")) {
+                        throw new IllegalArgumentException();
+                    }
+                    return s;
+                });
+        Flux<String> secondFlux = Flux.just("c", "d");
+
+        Flux<String> concatFlux = Flux.concatDelayError(firstFlux, secondFlux).log();
+
+        StepVerifier.create(concatFlux)
+                .expectSubscription()
+                .expectNext("a", "c", "d")
+                .expectError()
+                .verify();
+    }
+
+    @Test
     public void concatWithOperatorTest() {
         Flux<String> firstFlux = Flux.just("a", "b");
         Flux<String> secondFlux = Flux.just("c", "d");
