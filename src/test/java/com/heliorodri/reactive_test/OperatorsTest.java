@@ -311,4 +311,38 @@ public class OperatorsTest {
                 .verifyComplete();
     }
 
+    @Test
+    public void flatMapOperatorTest() throws InterruptedException {
+        Flux<String> flux1 = Flux.just("a", "b");
+
+        Flux<String> names = flux1.flatMap(this::findByName).log();
+        Thread.sleep(300);
+
+        StepVerifier.create(names)
+                .expectSubscription()
+                .expectNext("Name B", "Name A", "Name A2")
+                .verifyComplete();
+
+    }
+
+    @Test
+    public void flatMapSequentialOperatorTest() throws InterruptedException {
+        Flux<String> flux1 = Flux.just("a", "b");
+
+        Flux<String> names = flux1.flatMapSequential(this::findByName).log();
+        Thread.sleep(300);
+
+        StepVerifier.create(names)
+                .expectSubscription()
+                .expectNext("Name A", "Name A2", "Name B")
+                .verifyComplete();
+
+    }
+
+    private Flux<String> findByName(String name){
+        return name.equalsIgnoreCase("A")
+                ? Flux.just("Name A", "Name A2").delayElements(Duration.ofMillis(100))
+                : Flux.just("Name B");
+    }
+
 }
