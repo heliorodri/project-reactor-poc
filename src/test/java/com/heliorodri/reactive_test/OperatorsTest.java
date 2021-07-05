@@ -1,10 +1,17 @@
 package com.heliorodri.reactive_test;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
 @Slf4j
 public class OperatorsTest {
@@ -125,6 +132,24 @@ public class OperatorsTest {
                 .expectSubscription()
                 .expectNext(1,2,3,4,5)
                 .verifyComplete();
+    }
+
+    @Test
+    public void subscribeOnIOTest() {
+        Path file = Paths.get("text-file");
+
+         Mono<List<String>> list = Mono.fromCallable(() -> Files.readAllLines(file))
+                .log()
+                .subscribeOn(Schedulers.boundedElastic());
+
+         StepVerifier.create(list)
+                 .expectSubscription()
+                 .thenConsumeWhile(strings -> {
+                     Assertions.assertFalse(strings.isEmpty());
+                     log.info("list size: {}", strings.size());
+                     return true;
+                 })
+         .verifyComplete();
     }
 
 }
